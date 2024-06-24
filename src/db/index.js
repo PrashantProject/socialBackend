@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { DB_NAME } from "../constanc.js";
+import dotenv from 'dotenv';
+
 
 
 
