@@ -1,14 +1,20 @@
 import express from "express";
+import databaseConnect from "./db/index.js";
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const app = express();
+
+
 
 app.get('/',(req, res)=>{
     return res.send('enter in app');
 })
 
 
-const port=8000;
 
-app.listen(port,()=>{
+
+app.listen(process.env.PORT,()=>{
     console.log('app start')
 })
