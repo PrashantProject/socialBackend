@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import UserRouter from "./routes/user.routes.js"
+import PostRouter from "./routes/post.routes.js"
 
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 app.use("/user", UserRouter)
+app.use("/post", PostRouter)
 
 
 

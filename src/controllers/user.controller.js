@@ -1,8 +1,9 @@
 import { User } from "../models/user.model.js";
-import { upload } from "../middlewares/multer.middleware.js";
 import {asyncHandler} from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+import {uploadOnCloud} from "../utils/cloudinary.js"
+import fs from "fs";
 
 
 
@@ -76,21 +77,85 @@ const login= asyncHandler (async(req, res)=>{
 })
 
 
-const uploadImage=()=>{
+const logout=asyncHandler(async(req, res)=>{
+    const option={
+        httpOnly:true,
+        secure:true
+    }
+      res.status(200).clearCookie("token",option).json(
+        new ApiResponse(200, {},"Logout Successfuly")
+      )
+})
 
-}
+const uploadImage=asyncHandler(async(req, res)=>{
+      
+    
+     const imageLocalPath= req.files.image[0]?.path
 
-const uploadCover=()=>{
+     if(!imageLocalPath){
+        return res.status(422).json(
+            new ApiError(422, "image not found")
+        )
+     }
+    const coludimage= await uploadOnCloud(imageLocalPath)
+    await fs.promises.unlink(imageLocalPath);
+    if(!coludimage){
+        return res.status(500).json(
+            new ApiError(500, "image not upload please try again")
+        ) 
+    }
+    await User.findOneAndUpdate({_id:req.user._id},
+        { $set: { profileImage: coludimage.secure_url }},
+        { returnDocument: 'after' }
+    )
+    const updatedUser = await User.findById(req.user._id).select("-password");
 
-}
+    return res.status(200).json(new ApiResponse(200, updatedUser, "image uploaded successfuly"))
+
+})
+
+const uploadCover=asyncHandler( async(req, res)=>{
+    const imageLocalPath= req.files.Coverimage[0]?.path
+
+    if(!imageLocalPath){
+       return res.status(422).json(
+           new ApiError(422, "image not found")
+       )
+    }
+   const coludimage= await uploadOnCloud(imageLocalPath)
+   await fs.promises.unlink(imageLocalPath);
+   if(!coludimage){
+       return res.status(500).json(
+           new ApiError(500, "image not upload please try again")
+       ) 
+   }
+   await User.findOneAndUpdate({_id:req.user._id},
+       { $set: { coverImage: coludimage.secure_url }},
+       { returnDocument: 'after' }
+   )
+   const updatedUser = await User.findById(req.user._id).select("-password");
+
+  
+   return res.status(200).json(new ApiResponse(200, updatedUser, "image uploaded successfuly"))
+})
 
 
-const addEducation=()=>{
+const addEducation=asyncHandler( async(req, res)=>{
+        const {education}= req.body
+        if(education==null || education.trim()==""){
+            return res.status(422).json(new ApiError(422, "Education  is required"))
+        }
+ const update= await User.findOneAndUpdate({_id:req.user._id},
+    {$set:{education:education}},{ returnDocument: 'after'})
+  if(!update){
+    return res.status(500).json(new ApiError(500, "please try again "))
+  }
+  const updatedUser = await User.findById(req.user._id).select("-password");
+  return res.status(200).json(new ApiResponse(200,updatedUser,"educatioon added succesfuly"))
+})
 
-}
 
 
 
 
-
-export {signup, login, uploadImage, uploadCover, addEducation}
+export {signup, login, uploadImage, uploadCover, addEducation, logout}
