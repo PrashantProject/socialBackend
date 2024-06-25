@@ -7,7 +7,7 @@ dotenv.config();
 databaseConnect()
 .then(()=>{
     app.listen(process.env.PORT || 8000, ()=>{
-        console.log("app started");
+        console.log("app started", process.env.PORT);
     })
 })
 .catch((err)=>{

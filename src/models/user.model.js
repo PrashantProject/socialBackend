@@ -1,15 +1,17 @@
-import { hash } from "bcrypt";
+import bcrypt, { hash } from "bcrypt";
+import jwt from "jsonwebtoken"
 import mongoose, {Schema} from "mongoose";
 
 const userSchema= new Schema({
      name:{
-        require:true,
-        type:String,
+        type: String,
+       required: true,
         trim:true
      },
 
      email:{
-        require:true,
+        type: String,
+       required: true,
         unique: true,
         trim:true,
         lowecase:true
@@ -24,7 +26,7 @@ const userSchema= new Schema({
     connection: [
         {
             type:Schema.Types.ObjectId,
-            ref:Network
+            ref:"Network"
         }
     ],
 
@@ -44,18 +46,18 @@ const userSchema= new Schema({
 })
 
 userSchema.pre("save", async function(next){
-    if(this.isModefied("password")){
-        this.password=await bcrypt,hash(this.password, 10)
+    if(this.isModified("password")){
+        this.password=await bcrypt.hash(this.password, 10)
     }
      next()
 })
 
-userSchema.method.isCorrectPassword=async function(password){
+userSchema.methods.isCorrectPassword=async function(password){
     return await bcrypt.compare(password,this.password)
 }
 
 
-userSchema.method.generateJWT= async function(){
+userSchema.methods.generateJWT= async function(){
    return await jwt.sign({
         _id:this._id,
         emial:this.email,

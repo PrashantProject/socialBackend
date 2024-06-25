@@ -3,14 +3,24 @@ class ApiError extends Error{
         statusCode,
         message="Something went wrong",
         error=[],
-        statck="",
+        stack="",
     ){
-        super(message)
+        super(message);
         this.statusCode=statusCode
         this.data=null
-        this.message=message
         this.success=false
         this.error=error
+        this.stack = stack;
+    }
+
+    toJSON() {
+        return {
+            statusCode: this.statusCode,
+            data: this.data,
+            success: this.success,
+            message: this.message, 
+            error: this.error
+        };
     }
 }
 
