@@ -14,7 +14,10 @@ const signup= asyncHandler (async(req, res)=>{
     
     const {name, email,password}=req.body;
    
-    if(name.trim()=="" || name==null || email==null || email.trim()=="" || password==null || password.trim()==""){
+    if( name==null || email==null || password==null ){
+        return res.status(422).json(new ApiError(422, "name , email and password are required"));
+    }
+    if(name.trim()=="" || email.trim()=="" || password.trim()==""){
         return res.status(422).json(new ApiError(422, "name , email and password are required"));
     }
    const user=  await User.findOne({email});
@@ -58,7 +61,7 @@ const login= asyncHandler (async(req, res)=>{
 
    const isCorrectPassword=await user.isCorrectPassword(password)
    if(!isCorrectPassword){
-    return res.status(401).json(new ApiError(401, "Please enter correct credentials"));
+    return res.status(422).json(new ApiError(422, "Please enter correct credentials"));
    }
    const token= await user.generateJWT()
     if(!token){
@@ -67,8 +70,9 @@ const login= asyncHandler (async(req, res)=>{
 
     const userDtl= await User.findById(user._id).select("-password")
     const option={
-        httpOnly:true,
-        secure:true
+        httpOnly:false,
+        secure:false,
+        expires: new Date(Date.now()+10000)
     }
     return res.status(200).cookie("token",  token, option).json(
            new ApiResponse(200,{"user":userDtl, "token":token}, "Loggedin successfuly" )
