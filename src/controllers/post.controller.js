@@ -12,7 +12,7 @@ import fs from "fs";
 
 const allPost = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 3;
 
     const posts = await Post.find().populate('owner')
         .skip((page - 1) * limit)
