@@ -66,7 +66,7 @@ const sendRequest= asyncHandler(async(req, res)=>{
 
 
 const pendingRequest=asyncHandler(async(req,res)=>{
-    const HaveRequest= await Network.find({ receiver: req.user._id })
+    const HaveRequest= await Network.find({ receiver: req.user._id , accepted_at: null, rejected_at:  null  })
     return res.status(200).json(new ApiResponse(200, HaveRequest, "Request List"))
 })
 
@@ -146,7 +146,28 @@ const myNetwork=asyncHandler(async(req, res)=>{
 })
 
 const unfollow= asyncHandler(async(req, res)=>{
+    const {networkID}= req.body
+    if(!networkID){
+        return res.status(422).json(new ApiError(422,"network Id is required"))
+    }
+    if(networkID.trim()==""){
+        return res.status(422).json(new ApiError(422,"network Id is required"))
+    }
 
+    const networkRequest=await Network.findById(networkID)
+    if(!networkRequest){
+        return res.status(404).json(new ApiError(404,"Request not found"))
+    }
+
+    if(networkRequest.receiver.equals(req.user._id) || networkRequest.sender.equals(req.user._id)){
+       
+       await networkRequest.deleteOne();
+
+       return res.status(200).json(200, networkRequest, "Unfollow successfully")
+    }
+
+    return res.status(401).json(new ApiError(401,"you are not authorized for this operation"))
+   
 })
 
 export {peopleList, sendRequest, acceptRequest, rejectRequest, myNetwork, unfollow, pendingRequest}
