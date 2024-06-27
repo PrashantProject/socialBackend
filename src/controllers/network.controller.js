@@ -6,6 +6,9 @@ import { User } from "../models/user.model.js";
 import { Network }  from "../models/network.model.js"
 
 
+
+
+
 const peopleList=asyncHandler(async(req, res)=>{
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -22,6 +25,9 @@ const peopleList=asyncHandler(async(req, res)=>{
 
     res.status(200).json(new ApiResponse(200, Data, "People List "));
 })
+
+
+
 
 
 const sendRequest= asyncHandler(async(req, res)=>{
@@ -57,10 +63,14 @@ const sendRequest= asyncHandler(async(req, res)=>{
 })
 
 
+
+
 const pendingRequest=asyncHandler(async(req,res)=>{
     const HaveRequest= await Network.find({ receiver: req.user._id })
     return res.status(200).json(new ApiResponse(200, HaveRequest, "Request List"))
 })
+
+
 
 
 const acceptRequest= asyncHandler(async(req, res)=>{
@@ -90,11 +100,48 @@ const acceptRequest= asyncHandler(async(req, res)=>{
 })
 
 
-const rejectRequest=asyncHandler(async(req, res)=>{
 
+
+const rejectRequest=asyncHandler(async(req, res)=>{
+    const {networkID}= req.body
+    if(!networkID){
+        return res.status(422).json(new ApiError(422,"network Id is required"))
+    }
+    if(networkID.trim()==""){
+        return res.status(422).json(new ApiError(422,"network Id is required"))
+    }
+
+    const networkRequest=await Network.findById(networkID)
+    if(!networkRequest){
+        return res.status(404).json(new ApiError(404,"Request not found"))
+    }
+
+    if(!networkRequest.receiver.equals(req.user._id)){
+        return res.status(401).json(new ApiError(401,"you are not authorized for this operation"))
+    }
+
+    networkRequest.rejected_at= new Date();
+
+    await networkRequest.save();
+
+    return res.status(200).json(200, networkRequest, "Rejcected successfully")
 })
 
+
+
+
+
+
 const myNetwork=asyncHandler(async(req, res)=>{
+    const myNetwork = await Network.find({
+        $or: [
+          { sender: req.user._id },
+          { receiver: req.user._id }
+        ],
+        accepted_at: { $ne: null }
+      });
+    return res.status(200).json(new ApiResponse(200, myNetwork, "my network list"))
+
 
 })
 
