@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signup , login, logout,uploadImage, uploadCover, addEducation} from "../controllers/user.controller.js";
+import { signup , login, logout,uploadImage, uploadCover, addEducation, profile} from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import verifyToken from "../middlewares/auth.middleware.js";
 
@@ -17,7 +17,7 @@ import verifyToken from "../middlewares/auth.middleware.js";
    
   ]) , uploadImage)
 
-  router.post("/upload_image",verifyToken, upload.fields([
+  router.post("/upload_cover",verifyToken, upload.fields([
     {
       name:"Coverimage",
       maxCount:1
@@ -27,6 +27,8 @@ import verifyToken from "../middlewares/auth.middleware.js";
 
 
   router.put("/add_education",verifyToken, addEducation)
+
+  router.get("/:id", verifyToken, profile)
   
 
   export default router

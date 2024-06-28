@@ -161,5 +161,20 @@ const addEducation=asyncHandler( async(req, res)=>{
 
 
 
+const profile=asyncHandler(async(req, res)=>{
+      const id = req.params.id;
+   
+      const userData= await User.findById(id).select("-password");
+      
+      if(!userData){
+        return res.status(404).json(new ApiError(404, "User Note Found"))
+      }
+      
+      return res.status(200).json(new ApiResponse(200, userData , "User details"));
+})
 
-export {signup, login, uploadImage, uploadCover, addEducation, logout}
+
+
+
+
+export {signup, login, uploadImage, uploadCover, addEducation, logout, profile}

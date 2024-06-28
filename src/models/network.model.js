@@ -5,13 +5,13 @@ const NetworkSchema= new Schema({
        sender:{
         require:true,
         type:Schema.Types.ObjectId,
-        ref:User
+        ref:"User"
        },
 
        recever:{
         require:true,
         type:Schema.Types.ObjectId,
-        ref:User
+        ref:"User"
        },
 
        accepted_at:{

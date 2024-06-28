@@ -22,7 +22,18 @@ const userSchema= new Schema({
     coverImage:{
         type:String
     },
-
+    designation:{
+        type:String,
+    },
+    location:{
+        type:String
+    },
+    phone:{
+        type:String
+    },
+    website:{
+        type:String
+    },
     connection: [
         {
             type:Schema.Types.ObjectId,
