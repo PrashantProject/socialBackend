@@ -21,7 +21,12 @@ const JobSchema=new Schema({
     discription:{
         type:String,
         required:true
-    }
+    },
+
+    applicant:[{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    }]
 
 })
 
