@@ -124,7 +124,7 @@ const deleteJob= asyncHandler(async(req, res)=>{
     return res.status(404).json(404, "job not found !")
    }
 
-   if(req.user.id!=job.owner){
+   if(req.user._id!=job.owner){
     return res.status(403).json(new ApiError(403, "Ununauthorized"))
    }
 
@@ -140,7 +140,20 @@ const deleteJob= asyncHandler(async(req, res)=>{
 
 
 const apply= asyncHandler(async(req, res)=>{
+    const {jobID}=req.params.id
+   if(!jobID){
+    return res.status(422).json(new ApiError(422, "wrong perameters"))
+   }
 
+   const job = await Job.findById(jobID);
+   if(!job){
+    return res.status(404).json(404, "job not found !")
+   }
+
+   job.applicant=req.user._id;
+   job.save();
+
+   return res.status(200).json(200, {}, "job applied successfully")
 })
 
 
