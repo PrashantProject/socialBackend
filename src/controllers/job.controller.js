@@ -25,6 +25,11 @@ const getAll = asyncHandler(async(req, res)=>{
 })
 
 
+
+
+
+
+
 const singleJob= asyncHandler(async(req, res)=>{
     const jobID= req.params.id;
     if(!jobID){
@@ -40,6 +45,12 @@ const singleJob= asyncHandler(async(req, res)=>{
     return res.status(200).json(new ApiResponse(200,job, "singale job" ))
     
 })
+
+
+
+
+
+
 
 
 const newJob= asyncHandler(async(req, res)=>{
@@ -64,18 +75,60 @@ const newJob= asyncHandler(async(req, res)=>{
 })
 
 
-const edit= asyncHandler(async(req, res)=>{
 
+
+
+
+
+const edit= asyncHandler(async(req, res)=>{
+     const jobID= req.params.id;
+     if(!jobID){
+        return res.status(422).json(new ApiError(422, "wrong parameter"))
+     }
+    const {title,company, location, discription }=req.body;
+    if(title==null || company==null, location==null, discription==null){
+     return res.status(422, "title, company, location, discription  are reqierd");
+    }
+    if(title.trim()=="" || company.trim()=="", location.trim()=="", discription.trim()==""){
+      return res.status(422, "title, company, location, discription  are reqierd");
+     }
+
+     const job =await Job.findById(jobID);
+     job.title=title
+     job.company=company
+     job.location=location
+     job.discription=discription
+     job.save();
+
+     const jobData= await Job.findById(job._id).select("-applicant");
+
+     return res.status(200).json(new ApiResponse(200, jobData ,"Job Upated Sucessefuly" ))
 })
+
+
+
+
+
+
+
 
 
 const deleteJob= asyncHandler(async(req, res)=>{
 
 })
 
+
+
+
+
+
+
 const apply= asyncHandler(async(req, res)=>{
 
 })
+
+
+
 
 
 export {getAll, singleJob, newJob, edit, deleteJob, apply}

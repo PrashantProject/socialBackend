@@ -8,6 +8,7 @@ router.get("/", verifyToken ,getAll)
 router.get("/:id", verifyToken ,singleJob)
 
 router.post("/", verifyToken ,newJob)
+router.put("/:id",  verifyToken ,edit)
 
 
 
