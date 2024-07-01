@@ -9,6 +9,7 @@ router.get("/:id", verifyToken ,singleJob)
 
 router.post("/", verifyToken ,newJob)
 router.put("/:id",  verifyToken ,edit)
+router.delete("/:id", verifyToken ,deleteJob)
 
 
 
