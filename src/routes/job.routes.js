@@ -5,6 +5,9 @@ import {getAll, singleJob, newJob, edit, deleteJob, apply} from "../controllers/
 const router= Router();
 
 router.get("/", verifyToken ,getAll)
+router.get("/:id", verifyToken ,singleJob)
+
+router.post("/", verifyToken ,newJob)
 
 
 

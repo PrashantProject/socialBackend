@@ -43,7 +43,24 @@ const singleJob= asyncHandler(async(req, res)=>{
 
 
 const newJob= asyncHandler(async(req, res)=>{
+      const {title,company, location, discription, }=req.body;
+      if(title==null || company==null, location==null, discription==null){
+       return res.status(422, "title, company, location, discription  are reqierd");
+      }
+      if(title.trim()=="" || company.trim()=="", location.trim()=="", discription.trim()==""){
+        return res.status(422, "title, company, location, discription  are reqierd");
+       }
 
+     const job = await Job.create({
+        title,company, location, discription,
+     })
+
+     if(!job){
+        return res.status(500).json(new ApiError(500, "Failed Please Try Again"))
+     }
+     const jobData= await Job.findById(job._id).select("-applicant");
+
+     return res.status(201).json(new ApiResponse(201, jobData, "Job Created Succesfuly"))
 })
 
 
