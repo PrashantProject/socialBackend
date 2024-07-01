@@ -10,7 +10,7 @@ const getAll = asyncHandler(async(req, res)=>{
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    const jobs = await Job.find()
+    const jobs = await Job.find().select("-applicant").populate('owner', 'name email')
         .skip((page - 1) * limit)
         .limit(limit)
         .exec();
@@ -160,4 +160,27 @@ const apply= asyncHandler(async(req, res)=>{
 
 
 
-export {getAll, singleJob, newJob, edit, deleteJob, apply}
+
+
+
+const myJob=asyncHandler(async(req, res)=>{
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const jobs = await Job.find({ owner: req.user._id })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+
+    const totalCount = await User.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit)
+    const currentPage = page
+    const Data = { "jobs": jobs, "totalpage": totalPages, "currentPage": currentPage }
+
+    res.status(200).json(new ApiResponse(200, Data, "Job List "));
+})
+
+
+
+
+export {getAll, singleJob, newJob, edit, deleteJob, apply, myJob}
