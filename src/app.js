@@ -6,6 +6,7 @@ import UserRouter from "./routes/user.routes.js"
 import PostRouter from "./routes/post.routes.js"
 import NetworkRouter from "./routes/network.routeres.js"
 import JobRouter from "./routes/job.routes.js"
+import chatRouter from "./routes/chat.routes.js"
 
 
 const app = express();
@@ -23,6 +24,7 @@ app.use("/user", UserRouter)
 app.use("/post", PostRouter)
 app.use("/network", NetworkRouter)
 app.use("/job", JobRouter)
+app.use("/chat", chatRouter)
 
 
 
