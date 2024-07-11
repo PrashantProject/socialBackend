@@ -130,7 +130,17 @@ const Delete = asyncHandler(async (req, res) => {
 })
 
 
+const like= asyncHandler(async(req, res)=>{
+     const id= req.params.id;
+     const post=await Post.findById(id);
+     if(post.like==req.user._id){
+        post.like=req.user._id;
+     }
+     post.save(); 
+})
 
 
 
-export { allPost, create, myPost, Edit, Delete }
+
+
+export { allPost, create, myPost, Edit, Delete, like }
