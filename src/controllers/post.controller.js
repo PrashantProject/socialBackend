@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloud } from "../utils/cloudinary.js"
 import fs from "fs";
+import { response } from "express";
 
 
 
@@ -112,31 +113,49 @@ const Edit = asyncHandler(async (req, res) => {
 
 const Delete = asyncHandler(async (req, res) => {
     const postID = req.params.id;
-    if(!postID){
-         return res.status(422).json(422, "Invelid Parametres")
+    if (!postID) {
+        return res.status(422).json(422, "Invelid Parametres")
     }
-    const post =Post.findById(postID)
-    if(!post){
+    const post = Post.findById(postID)
+    if (!post) {
         return res.status(404).json(404, "post not found")
     }
-    if(post.owner!=req.user._id){
+    if (post.owner != req.user._id) {
         return res.status(403).json(404, "You are not authris to delet the post")
     }
     post.deleteOne();
-    
 
-    return res.status(200).json(200 ,new ApiResponse(200,{}, "post deleted succesfuly" ))
-    
+
+    return res.status(200).json(200, new ApiResponse(200, {}, "post deleted succesfuly"))
+
 })
 
 
-const like= asyncHandler(async(req, res)=>{
-     const id= req.params.id;
-     const post=await Post.findById(id);
-     if(post.like==req.user._id){
-        post.like=req.user._id;
-     }
-     post.save(); 
+const like = asyncHandler(async (req, res) => {
+    const postId = req.params.id;
+    const userId= req.user._id
+    const post = await Post.findById(postId);
+    if (!post) {
+        return res.status(404).json(new ApiError(404, "post not found"))
+    }
+
+    const isLiked = post.like.some(like => like.like.toString() === userId.toString());
+    if (isLiked) {
+        return res.status(422).json(new ApiError(422, "User has already liked this post"))
+    }
+
+    post.like.push({ like: userId });
+    await post.save();
+
+    return res.status(200).json(new ApiResponse(200, post, "Like added"))
+
+
+})
+
+
+
+const comment = asyncHandler(async()=>{
+    
 })
 
 
