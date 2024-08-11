@@ -153,6 +153,23 @@ const like = asyncHandler(async (req, res) => {
 })
 
 
+const unLike= asyncHandler(async(req, res)=>{
+    const postId = req.params.id;
+    const {likeId}= req.body;
+    const post = await Post.findByIdAndUpdate(
+       postId,
+       { $pull: { likes: { _id: likeId } } },
+       { new: true }
+    );
+
+    if (!post) {
+       return res.status(404).json(new ApiError(404, "post not found"));
+    }
+
+    return res.status(200).json(new ApiResponse(200, post, "Like removed"))
+})
+
+
 
 const comment = asyncHandler(async()=>{
     
@@ -162,4 +179,4 @@ const comment = asyncHandler(async()=>{
 
 
 
-export { allPost, create, myPost, Edit, Delete, like }
+export { allPost, create, myPost, Edit, Delete, like , unLike}

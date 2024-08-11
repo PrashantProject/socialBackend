@@ -1,28 +1,34 @@
 import mongoose, { Schema } from "mongoose";
 
-const PostSchema= new Schema({
-   owner:{
-    type:Schema.Types.ObjectId,
-    ref:"User",
-    required:true,
+const LikeSchema = new Schema({
+   like: {
+      type: Schema.Types.ObjectId,
+      ref: "User"
+   }
+})
+
+const PostSchema = new Schema({
+   owner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
    },
 
-   file:{
-    type:String
+   file: {
+      type: String
    },
 
-   discription:{
-    type:String,
-    required:true
+   discription: {
+      type: String,
+      required: true
    },
 
-   like:[{
-    type:Schema.Types.ObjectId,
-    ref:"User"
-   }]
-},{
-   timestamps:true
+   like: {
+      type: [LikeSchema]
+   }
+}, {
+   timestamps: true
 })
 
 
-export const Post=mongoose.model("Post", PostSchema);
+export const Post = mongoose.model("Post", PostSchema);
